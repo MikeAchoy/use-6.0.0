@@ -9,6 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.print.PageFormat;
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,11 +25,13 @@ import org.tzi.use.gui.views.PrintableView;
 import org.tzi.use.gui.views.View;
 import org.tzi.use.uml.sys.MSystem;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 // MOSI Chat View class
 // custom view class for chat bot
-
-
 @SuppressWarnings("serial")
 public class AssistantView extends JPanel implements View, PrintableView{
 
@@ -316,11 +321,51 @@ public class AssistantView extends JPanel implements View, PrintableView{
     }
 
     
-
+    // MAB TODO: Send questoin to API, and add reponse in chatTextArea. 
     private void sendMessage() {
         String message = textField.getText();
         if (!message.trim().isEmpty()) {
             chatTextArea.append("You: " + message + "\n\n");
+            
+
+
+            try {
+            String apiKey = "YOUR_API_KEY";
+            String endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
+
+            URL url = new URL(endpoint);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+
+            // Set up your request payload here
+            String payload = "{\"prompt\": \"Write something here.\"}";
+
+            connection.setDoOutput(true);
+            connection.getOutputStream().write(payload.getBytes("UTF-8"));
+
+            // Read the response
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+            System.out.println(response.toString());
+
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            
+
+
+            // Reset textField.
             textField.setText("");
         }
     }
