@@ -327,43 +327,43 @@ public class AssistantView extends JPanel implements View, PrintableView{
         if (!message.trim().isEmpty()) {
             chatTextArea.append("You: " + message + "\n\n");
             
-
-
+            // Block for accessing openAI API through web-service.
             try {
-            String apiKey = "YOUR_API_KEY";
-            String endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
+                String apiKey = "YOUR_API_KEY";
+                String endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
 
-            URL url = new URL(endpoint);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                URL url = new URL(endpoint);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
 
-            // Set up your request payload here
-            String payload = "{\"prompt\": \"Write something here.\"}";
+                // Set up request payload here
+                String payload = "{\"prompt\": \"Example question?\"}";
 
-            connection.setDoOutput(true);
-            connection.getOutputStream().write(payload.getBytes("UTF-8"));
+                connection.setDoOutput(true);
+                connection.getOutputStream().write(payload.getBytes("UTF-8"));
 
-            // Read the response
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            StringBuilder response = new StringBuilder();
+                // Read the response
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
 
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+                System.out.println(response.toString());
+
+                // TODO: Parse JSON reponse in order to get desired response.
+                connection.disconnect();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            reader.close();
-            System.out.println(response.toString());
-
-            connection.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-            
-
+        
 
             // Reset textField.
             textField.setText("");
